@@ -14,8 +14,13 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
-app.get("/", (req, res) => {
-  res.send("fuck off");
+app.get("/kaka", (req, res) => {
+  res.status(200).set({
+    connection: "keep-alive",
+    "content-type": "text/event-stream",
+  });
+  setInterval(() => {
+    res.write(`data: Hello there \n\n`);
+  }, 4000);
 });
-app.use(errorHandler);
 module.exports = app;
