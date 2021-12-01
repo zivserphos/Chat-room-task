@@ -7,6 +7,8 @@ const morganHandler = require("./middlewares/morgan");
 const errorHandler = require("./middlewares/errorHandlers");
 const app = express();
 
+const comments = [];
+
 app.use(express.json());
 app.use(cors());
 app.use(
@@ -19,8 +21,23 @@ app.get("/kaka", (req, res) => {
     connection: "keep-alive",
     "content-type": "text/event-stream",
   });
+  let index = 0;
   setInterval(() => {
-    res.write(`data: Hello there \n\n`);
+    if (comments.length > index) {
+      const data = "hello ziv";
+      res.write(`data: ${data} \n\n\ `);
+      index += 1;
+    }
   }, 4000);
+});
+
+app.post("/AniGever", (req, res) => {
+  console.log("gggg");
+  comments.push("ziv hoo gever");
+  return res.send("yes you are gever");
+});
+
+app.get("/", (req, res) => {
+  console.log("shit");
 });
 module.exports = app;

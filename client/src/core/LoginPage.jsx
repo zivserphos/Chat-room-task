@@ -21,7 +21,7 @@ export default function LoginPage() {
       </div>
       <form onSubmit={(e) => {
         e.preventDefault()
-        if(toHomePage(inputEl))  navigate("/" , {user: "Gggg"})
+        if(toHomePage(inputEl))  navigate("/" , {state: {user: inputEl.current.value}})
       }}>
         <h3>Login Here</h3>
         <label htmlFor="username">Username</label>
