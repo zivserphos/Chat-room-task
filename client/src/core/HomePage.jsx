@@ -1,39 +1,50 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 export default function HomePage() {
+  const [comments, setComments] = useState([]);
   const location = useLocation();
-  const userName = location.state.user;
-  const msgAreaEl = useRef()
   const inputEl = useRef();
+  const userName = location.state.user;
 
-  const source = new EventSource("http://localhost:3001/kaka");
-  source.onopen = function () {
-    console.log("connection to stream has been opened");
-  };
-  source.onerror = function (error) {
-    console.log("An error has occurred while receiving stream", error);
-  };
-  source.onmessage = function ({ data }) {
-    console.log("received stream", data);
-  };
+  useEffect(() => {
+    const source = new EventSource("http://localhost:3001/chatStream", {
+      headers: { "Content-Type": "text/event-stream" },
+    });
+
+    source.onopen = function () {
+      console.log("connection to stream has been opened");
+    };
+    source.onerror = function (error) {
+      console.log("An error has occurred while receiving stream", error);
+    };
+    source.onmessage = function (event) {
+      const comment = JSON.parse(event.data);
+      const newComments = [...comments];
+      newComments.push(comment);
+      // const newComments = JSON.parse(event.data).comments;
+      console.log(newComments);
+      if (!newComments) return;
+      setComments(newComments);
+    };
+  }, []);
 
   async function postComment() {
-    console.log("i got fired");
-    if (!inputEl.current.value) return
+    if (!inputEl.current.value) return;
     try {
-        console.log(inputEl.current.value)
-        const response = await axios.post("http://localhost:3001/AniGever", {
-            comment: inputEl.current.value,
-          });
-        console.log(response.data)
-        console.log("zzz")
+      await axios.post(
+        "http://localhost:3001/postComment",
+        { content: inputEl.current.value, userName: userName },
+        {
+          headers: {
+            "content-Type": "application/json",
+          },
+        }
+      );
+    } catch (err) {
+      console.log(err);
     }
-    catch(err) {
-        console.log(err)
-    }
-
   }
 
   return (
@@ -45,9 +56,10 @@ export default function HomePage() {
       </div>
       <div className="wrapper">
         <div className="main-container">
-          <div className="message-area" ref={msgAreaEl}>
-            {userName}: This is the first message <br />
-            {userName}: this is the Second message
+          <div className="message-area">
+            {comments.map((comment) => (
+              <div>{comment.content}</div>
+            ))}
           </div>
           <div className="enter-area">
             <form>
@@ -59,6 +71,7 @@ export default function HomePage() {
                 ref={inputEl}
               ></input>
               <input
+                className="submitComment"
                 type="submit"
                 name="message-send"
                 id="message-send"
