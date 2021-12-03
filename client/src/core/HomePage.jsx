@@ -10,6 +10,7 @@ const source = new EventSource("http://localhost:3001/chatStream", {
 
 export default function HomePage() {
   const [comments, setComments] = useState([]);
+  const [users, SetUsers] = useState([]);
   const location = useLocation();
   const inputEl = useRef();
   const userName = location.state.user;
@@ -23,6 +24,8 @@ export default function HomePage() {
     };
     source.onmessage = function (event) {
       const newComments = JSON.parse(event.data).comments;
+      const users = JSON.parse(event.data).users;
+      if (users) SetUsers(users);
       console.log("im here onmessage");
       setComments(newComments);
     };
@@ -57,7 +60,7 @@ export default function HomePage() {
         </div>
       </div>
       <div class="chat">
-        <OnlineUsers />
+        <OnlineUsers users={users} />
         <div className="wrapper">
           <div className="main-container">
             <div className="message-area">

@@ -150,6 +150,8 @@
   }
 
   .message-area {
+    display: flex;
+    flex-direction: column-reverse;
     overflow-y: scroll;
     height: 100px;
     resize: none; /* Remove this if you want the user to resize the textarea */
