@@ -9,6 +9,9 @@ const Comments = new mongoose.Schema({
     type: String,
     required: true,
   },
+  timeSent: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Comments", Comments);

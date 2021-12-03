@@ -1,6 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { SelfMessage, Message } from "./components/Message";
+import OnlineUsers from "./components/OnlineUsers";
 import axios from "axios";
+
+const source = new EventSource("http://localhost:3001/chatStream", {
+  headers: { "Content-Type": "text/event-stream" },
+});
 
 export default function HomePage() {
   const [comments, setComments] = useState([]);
@@ -9,10 +15,6 @@ export default function HomePage() {
   const userName = location.state.user;
 
   useEffect(() => {
-    const source = new EventSource("http://localhost:3001/chatStream", {
-      headers: { "Content-Type": "text/event-stream" },
-    });
-
     source.onopen = function () {
       console.log("connection to stream has been opened");
     };
@@ -20,22 +22,22 @@ export default function HomePage() {
       console.log("An error has occurred while receiving stream", error);
     };
     source.onmessage = function (event) {
-      const comment = JSON.parse(event.data);
-      const newComments = [...comments];
-      newComments.push(comment);
-      // const newComments = JSON.parse(event.data).comments;
-      console.log(newComments);
-      if (!newComments) return;
+      const newComments = JSON.parse(event.data).comments;
+      console.log("im here onmessage");
       setComments(newComments);
     };
   }, []);
 
   async function postComment() {
     if (!inputEl.current.value) return;
+    const hours = new Date().getHours().toString();
+    let minutes = new Date().getMinutes().toString();
+    if (minutes.length === 1) minutes = `0${minutes}`;
+    const timeSent = `${hours}:${minutes}`;
     try {
       await axios.post(
         "http://localhost:3001/postComment",
-        { content: inputEl.current.value, userName: userName },
+        { content: inputEl.current.value, userName: userName, timeSent },
         {
           headers: {
             "content-Type": "application/json",
@@ -54,44 +56,43 @@ export default function HomePage() {
           <p>Welcome, {userName}</p>
         </div>
       </div>
-      <div className="wrapper">
-        <div className="main-container">
-          <div className="message-area">
-            {comments.map((comment) => (
-              <div>{comment.content}</div>
-            ))}
-          </div>
-          <div className="enter-area">
-            <form>
-              <input
-                type="text"
-                placeholder="Enter Message..."
-                name="message-ent"
-                id="message-ent"
-                ref={inputEl}
-              ></input>
-              <input
-                className="submitComment"
-                type="submit"
-                name="message-send"
-                id="message-send"
-                value="Send"
-                onClick={(e) => {
-                  e.preventDefault();
-                  postComment();
-                }}
-              ></input>
-            </form>
-          </div>
-        </div>
-        <div className="online-tab">
-          <div className="status-bar-user">
-            <p>
-              <span>• </span>Online
-            </p>
-          </div>
-          <div className="online-user-list">
-            <div className="online-tab-open">&#9776;</div>
+      <div class="chat">
+        <OnlineUsers />
+        <div className="wrapper">
+          <div className="main-container">
+            <div className="message-area">
+              {!comments
+                ? ""
+                : comments.map((comment) =>
+                    comment.userName === userName ? (
+                      <SelfMessage comment={comment} />
+                    ) : (
+                      <Message comment={comment} />
+                    )
+                  )}
+            </div>
+            <div className="enter-area">
+              <form>
+                <input
+                  type="text"
+                  placeholder="Enter Message..."
+                  name="message-ent"
+                  id="message-ent"
+                  ref={inputEl}
+                ></input>
+                <input
+                  className="submitComment"
+                  type="submit"
+                  name="message-send"
+                  id="message-send"
+                  value="Send"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    postComment();
+                  }}
+                ></input>
+              </form>
+            </div>
           </div>
         </div>
       </div>

@@ -4,27 +4,31 @@ const { EventEmitter } = require("events");
 const emitter = new EventEmitter();
 const bcrypt = require("bcrypt");
 
+let index = 0;
+
 exports.chatStream = async (req, res) => {
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     Connection: "Keep-Alive",
   });
-  const comments = ["!", "@", "%"];
-  res.write(`data: ${JSON.stringify({ comments })} \n\n`);
-  emitter.addListener("comment", (comment) => {
-    console.log("im on emmit");
-    res.write(`data: ${JSON.stringify({ comment })} \n\n`);
+  const comments = await Comments.find({});
+  res.write(`data: ${JSON.stringify({ comments })} \n\n\ `);
+  emitter.on("comment", (comments) => {
+    index += 1;
+    console.log(index);
+    res.write(`data: ${JSON.stringify({ comments })} \n\n`);
   });
 };
 
 exports.postComment = async (req, res, next) => {
-  const { content, userName } = req.body;
+  const { content, userName, timeSent } = req.body;
   const user = await Users.findOne({ userName: userName });
   if (!user) Users.insertMany({ userName });
   try {
-    const comment = { userName, content: content };
-    await Comments.insertMany({ userName: userName, content: content });
-    emitter.emit("comment", comment);
+    const comment = { userName, content: content, timeSent };
+    await Comments.insertMany(comment);
+    const comments = await Comments.find({});
+    emitter.emit("comment", comments);
   } catch (err) {
     next({ status: 400, message: { error: "could not post comment" } });
   }
