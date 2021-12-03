@@ -37,6 +37,6 @@ exports.postComment = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res) => {
-  const { User } = req.body;
+  const { user } = req.body;
   await Users.insertMany(user);
 };
