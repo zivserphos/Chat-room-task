@@ -8,7 +8,7 @@ export function SelfMessage({ comment }) {
           {" "}
           <b>{`${userName}`}</b>: {`${content}`}
         </p>
-        <div class="message-timestamp-left">SMS {timeSent}</div>
+        <div className="message-timestamp-left">SMS {timeSent}</div>
       </div>
     </div>
   );

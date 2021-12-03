@@ -23,10 +23,10 @@ export default function HomePage() {
       console.log("An error has occurred while receiving stream", error);
     };
     source.onmessage = function (event) {
-      const newComments = JSON.parse(event.data).comments;
+      let newComments = JSON.parse(event.data).comments;
+      newComments = newComments.reverse();
       const users = JSON.parse(event.data).users;
       if (users) SetUsers(users);
-      console.log("im here onmessage");
       setComments(newComments);
     };
   }, []);
@@ -59,7 +59,7 @@ export default function HomePage() {
           <p>Welcome, {userName}</p>
         </div>
       </div>
-      <div class="chat">
+      <div className="chat">
         <OnlineUsers users={users} />
         <div className="wrapper">
           <div className="main-container">
