@@ -12,11 +12,12 @@ exports.chatStream = async (req, res) => {
     Connection: "Keep-Alive",
   });
   const comments = await Comments.find({});
-  res.write(`data: ${JSON.stringify({ comments })} \n\n\ `);
+  res.write(`data: ${JSON.stringify({ comments })} \n\n`);
   emitter.on("comment", (comments) => {
-    index += 1;
-    console.log(index);
     res.write(`data: ${JSON.stringify({ comments })} \n\n`);
+  });
+  emitter.on("users", (users) => {
+    res.write(`data: ${JSON.stringify({ users })} \n\n`);
   });
 };
 
@@ -33,4 +34,9 @@ exports.postComment = async (req, res, next) => {
     next({ status: 400, message: { error: "could not post comment" } });
   }
   res.send("comment has been posted");
+};
+
+exports.addUser = async (req, res) => {
+  const { User } = req.body;
+  await Users.insertMany(user);
 };
