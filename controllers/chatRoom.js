@@ -1,8 +1,10 @@
 const Comments = require("../models/comment");
 const Users = require("../models/users");
+const OnlineUsers = require("../models/onlineUsers");
 const { EventEmitter } = require("events");
 const emitter = new EventEmitter();
 const bcrypt = require("bcrypt");
+const onlineUsers = require("../models/onlineUsers");
 
 let index = 0;
 
@@ -36,7 +38,20 @@ exports.postComment = async (req, res, next) => {
   res.send("comment has been posted");
 };
 
-exports.addUser = async (req, res) => {
+exports.onlineUser = async (req, res) => {
   const { user } = req.body;
-  await Users.insertMany(user);
+  const isLogin = OnlineUsers.find({ user });
+  isLogin
+    ? await OnlineUsers.insertMany({ user: user })
+    : res.status(409).send("User already logged in");
+  res.status(200).send("User is now online to chat");
+};
+
+exports.oflineUser = async (req, res) => {
+  const { user } = req.body;
+  const isLogin = OnlineUsers.find({ user });
+  isLogin
+    ? res.status(409).send("User is not online to this moment")
+    : await OnlineUsers.deleteOne({ user: user });
+  res.status(200).send("User is now online to chat");
 };

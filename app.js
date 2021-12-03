@@ -6,7 +6,11 @@ const morgan = require("morgan");
 const morganHandler = require("./middlewares/morgan");
 const errorHandler = require("./middlewares/errorHandlers");
 const path = require("path");
-const { postComment, chatStream } = require("./controllers/chatRoom");
+const {
+  postComment,
+  chatStream,
+  onlineUser,
+} = require("./controllers/chatRoom");
 const app = express();
 
 app.use(express.json());
@@ -25,5 +29,7 @@ app.get("/", (req, res) => {
 app.get("/chatStream", chatStream);
 
 app.post("/postComment", postComment);
+
+app.post("/addOnlineUser", onlineUser);
 
 module.exports = app;
