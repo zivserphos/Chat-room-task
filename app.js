@@ -23,7 +23,7 @@ app.use(
 );
 app.use(express.static(path.resolve("../client/build/")));
 
-app.get("/", homePage);
+app.get("/login", homePage);
 app.get("/chatStream", chatStream);
 app.post("/postComment", postComment);
 app.post("/addOnlineUser/:userName", onlineUser);

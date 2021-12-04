@@ -5,6 +5,7 @@ const { EventEmitter } = require("events");
 const emitter = new EventEmitter();
 const bcrypt = require("bcrypt");
 const onlineUsers = require("../models/onlineUsers");
+const path = require("path");
 
 let index = 0;
 
@@ -13,10 +14,9 @@ exports.chatStream = async (req, res) => {
     "Content-Type": "text/event-stream",
     Connection: "Keep-Alive",
   });
-  const comments = await Comments.find({});
-  res.write(`data: ${JSON.stringify({ comments })} \n\n`);
+  const newComments = await Comments.find({});
+  res.write(`data: ${JSON.stringify({ newComments })} \n\n`);
   emitter.on("comment", (newComments) => {
-    console.log(newComments);
     res.write(`data: ${JSON.stringify({ newComments })} \n\n`);
   });
   emitter.on("users", (users) => {
@@ -62,6 +62,5 @@ exports.offlineUser = async (req, res) => {
 };
 
 exports.homePage = (req, res) => {
-  return res.redirect("/login");
-  // res.sendFile(path.resolve("../../client/build/index.html"));
+  res.sendFile(path.resolve("../client/build/index.html"));
 };
