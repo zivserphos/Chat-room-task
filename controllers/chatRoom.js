@@ -57,8 +57,6 @@ exports.offlineUser = async (req, res) => {
   const isLogin = await OnlineUsers.find({ userName });
   if (!isLogin) {
     res.status(409).send("User already logged in");
-    // await OnlineUsers.insertMany({ userName });
-    // res.status(200).send("User is now online to chat");
   } else {
     const isDeleted = await OnlineUsers.deleteOne({ userName });
     const updatedOnlineUsers = await OnlineUsers.find({});
@@ -72,3 +70,14 @@ exports.offlineUser = async (req, res) => {
 exports.homePage = (req, res) => {
   res.sendFile(path.resolve("../client/build/index.html"));
 };
+
+// req.on('close', async () => {
+//   try {
+//     console.log(`${username} disconnected`);
+//     await User.findOneAndDelete({ name: username });
+
+//     em.emit('login/logout');
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
