@@ -10,6 +10,8 @@ const {
   postComment,
   chatStream,
   onlineUser,
+  offlineUser,
+  homePage,
 } = require("./controllers/chatRoom");
 const app = express();
 
@@ -19,17 +21,14 @@ app.use(
   morganHandler,
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
-
 app.use(express.static(path.resolve("../client/build/")));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.resolve("../client/build/index.html"));
-});
-
+app.get("/", homePage);
 app.get("/chatStream", chatStream);
-
 app.post("/postComment", postComment);
+app.post("/addOnlineUser/:userName", onlineUser);
+app.post("/offlineUser", offlineUser);
 
-app.post("/addOnlineUser", onlineUser);
+app.use(errorHandler);
 
 module.exports = app;

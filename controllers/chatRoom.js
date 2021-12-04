@@ -15,8 +15,9 @@ exports.chatStream = async (req, res) => {
   });
   const comments = await Comments.find({});
   res.write(`data: ${JSON.stringify({ comments })} \n\n`);
-  emitter.on("comment", (comments) => {
-    res.write(`data: ${JSON.stringify({ comments })} \n\n`);
+  emitter.on("comment", (newComments) => {
+    console.log(newComments);
+    res.write(`data: ${JSON.stringify({ newComments })} \n\n`);
   });
   emitter.on("users", (users) => {
     res.write(`data: ${JSON.stringify({ users })} \n\n`);
@@ -39,19 +40,28 @@ exports.postComment = async (req, res, next) => {
 };
 
 exports.onlineUser = async (req, res) => {
-  const { user } = req.body;
-  const isLogin = OnlineUsers.find({ user });
-  isLogin
-    ? await OnlineUsers.insertMany({ user: user })
-    : res.status(409).send("User already logged in");
-  res.status(200).send("User is now online to chat");
+  const { userName } = req.params;
+  const isLogin = await OnlineUsers.findOne({ userName });
+  if (!isLogin) {
+    await OnlineUsers.insertMany({ userName });
+    res.status(200).send("User is now online to chat");
+  } else {
+    res.status(409).send("User already logged in");
+  }
+  const users = await OnlineUsers.distinct("userName");
+  return emitter.emit("users", users);
 };
 
-exports.oflineUser = async (req, res) => {
+exports.offlineUser = async (req, res) => {
   const { user } = req.body;
   const isLogin = OnlineUsers.find({ user });
   isLogin
     ? res.status(409).send("User is not online to this moment")
     : await OnlineUsers.deleteOne({ user: user });
   res.status(200).send("User is now online to chat");
+};
+
+exports.homePage = (req, res) => {
+  return res.redirect("/login");
+  // res.sendFile(path.resolve("../../client/build/index.html"));
 };
