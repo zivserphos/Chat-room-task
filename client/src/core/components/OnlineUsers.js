@@ -10,7 +10,11 @@ export default function OnlineUsers({ users }) {
       </div>
       <div className="online-user-list">
         {users.map((user) => {
-          return <div class="onlineUser">{user}</div>;
+          return (
+            <div class="onlineUser" key={user}>
+              {user}
+            </div>
+          );
         })}
       </div>
     </div>

@@ -4,18 +4,28 @@ import { SelfMessage, Message } from "./components/Message";
 import OnlineUsers from "./components/OnlineUsers";
 import axios from "axios";
 
-const source = new EventSource("http://localhost:3001/chatStream", {
-  headers: { "Content-Type": "text/event-stream" },
-});
+// const source = new EventSource("http://localhost:3001/chatStream", {
+//   headers: { "Content-Type": "text/event-stream" },
+// });
 
 export default function HomePage() {
+  console.log("ggg");
   const [comments, setComments] = useState([]);
   const [users, SetUsers] = useState([]);
+  const [source, setSource] = useState(null);
   const location = useLocation();
   const inputEl = useRef();
   const userName = location.state.user;
 
   useEffect(() => {
+    setSource(
+      new EventSource("http://localhost:3001/chatStream", {
+        headers: { "Content-Type": "text/event-stream" },
+      })
+    );
+  }, []);
+
+  if (source) {
     source.onopen = async function () {
       console.log("connection to stream has been opened");
       await axios.post(`http://localhost:3001/addOnlineUser/${userName}`);
@@ -34,7 +44,7 @@ export default function HomePage() {
         setComments(newComments);
       }
     };
-  }, []);
+  }
 
   async function postComment() {
     if (!inputEl.current.value) return;
