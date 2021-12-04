@@ -44,6 +44,8 @@ export default function HomePage() {
         setComments(newComments);
       }
     };
+  } else {
+    axios.delete(`http://localhost:3001/addOnlineUser/${userName}`);
   }
 
   async function postComment() {

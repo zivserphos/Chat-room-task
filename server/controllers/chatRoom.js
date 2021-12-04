@@ -1,10 +1,10 @@
-const Comments = require("../models/comment");
-const Users = require("../models/users");
-const OnlineUsers = require("../models/onlineUsers");
+const Comments = require("../db/models/comment");
+const Users = require("../db/models/users");
+const OnlineUsers = require("../db/models/onlineUsers");
 const { EventEmitter } = require("events");
 const emitter = new EventEmitter();
 const bcrypt = require("bcrypt");
-const onlineUsers = require("../models/onlineUsers");
+const onlineUsers = require("../db/models/onlineUsers");
 const path = require("path");
 
 let index = 0;
@@ -48,17 +48,25 @@ exports.onlineUser = async (req, res) => {
   } else {
     res.status(409).send("User already logged in");
   }
-  const users = await OnlineUsers.distinct("userName");
-  return emitter.emit("users", users);
+  const updatedOnlineUsers = await OnlineUsers.distinct("userName");
+  return emitter.emit("users", updatedOnlineUsers);
 };
 
 exports.offlineUser = async (req, res) => {
-  const { user } = req.body;
-  const isLogin = OnlineUsers.find({ user });
-  isLogin
-    ? res.status(409).send("User is not online to this moment")
-    : await OnlineUsers.deleteOne({ user: user });
-  res.status(200).send("User is now online to chat");
+  const { userName } = req.params;
+  const isLogin = await OnlineUsers.find({ userName });
+  if (!isLogin) {
+    res.status(409).send("User already logged in");
+    // await OnlineUsers.insertMany({ userName });
+    // res.status(200).send("User is now online to chat");
+  } else {
+    const isDeleted = await OnlineUsers.deleteOne({ userName });
+    const updatedOnlineUsers = await OnlineUsers.find({});
+    emitter.emit("users");
+    res.status(200).send("User is now offline to chat");
+  }
+  const updatedOnlineUsers = await OnlineUsers.distinct("userName");
+  return emitter.emit("users", updatedOnlineUsers);
 };
 
 exports.homePage = (req, res) => {
