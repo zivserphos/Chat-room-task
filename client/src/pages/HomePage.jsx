@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { SelfMessage, Message } from "./components/Message";
-import OnlineUsers from "./components/OnlineUsers";
+import { SelfMessage, Message } from "../core/components/Message";
+import OnlineUsers from "../core/components/OnlineUsers";
 import axios from "axios";
 
 // const source = new EventSource("http://localhost:3001/chatStream", {

@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../login.scss";
+// import "../login.scss";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function LoginPage() {
         onSubmit={(e) => {
           e.preventDefault();
           if (toHomePage(inputEl))
-            navigate("/", { state: { user: inputEl.current.value } }); //  { state: { user: inputEl.current.value } }
+            navigate("/", { state: { user: inputEl.current.value } });
         }}
       >
         <h3>Login Here</h3>
