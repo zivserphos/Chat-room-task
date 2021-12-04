@@ -16,18 +16,23 @@ export default function HomePage() {
   const userName = location.state.user;
 
   useEffect(() => {
-    source.onopen = function () {
+    source.onopen = async function () {
       console.log("connection to stream has been opened");
+      await axios.post(`http://localhost:3001/addOnlineUser/${userName}`);
     };
     source.onerror = function (error) {
       console.log("An error has occurred while receiving stream", error);
     };
     source.onmessage = function (event) {
-      let newComments = JSON.parse(event.data).comments;
-      newComments = newComments.reverse();
       const users = JSON.parse(event.data).users;
+      let newComments = JSON.parse(event.data).newComments;
+      console.log(newComments);
+
       if (users) SetUsers(users);
-      setComments(newComments);
+      if (newComments) {
+        newComments = newComments.reverse();
+        setComments(newComments);
+      }
     };
   }, []);
 

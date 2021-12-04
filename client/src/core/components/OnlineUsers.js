@@ -5,11 +5,13 @@ export default function OnlineUsers({ users }) {
     <div className="online-tab">
       <div className="status-bar-user">
         <p>
-          <span>• {users.map((user) => user)}</span>Online
+          <span>•</span>Online
         </p>
       </div>
       <div className="online-user-list">
-        <div className="online-tab-closed">&#9776;</div>
+        {users.map((user) => {
+          return <div class="onlineUser">{user}</div>;
+        })}
       </div>
     </div>
   );
