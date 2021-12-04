@@ -4,10 +4,6 @@ import { SelfMessage, Message } from "../core/components/Message";
 import OnlineUsers from "../core/components/OnlineUsers";
 import axios from "axios";
 
-// const source = new EventSource("http://localhost:3001/chatStream", {
-//   headers: { "Content-Type": "text/event-stream" },
-// });
-
 export default function HomePage() {
   console.log("ggg");
   const [comments, setComments] = useState([]);
@@ -44,10 +40,7 @@ export default function HomePage() {
         setComments(newComments);
       }
     };
-  } else {
-    axios.delete(`http://localhost:3001/addOnlineUser/${userName}`);
   }
-
   async function postComment() {
     if (!inputEl.current.value) return;
     const hours = new Date().getHours().toString();
