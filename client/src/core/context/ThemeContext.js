@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import Header from "../components/Header";
 
 const ThemeContext = React.createContext();
 const ThemeUpdateContext = React.createContext();

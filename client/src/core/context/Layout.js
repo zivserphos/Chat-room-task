@@ -9,7 +9,7 @@ export default function Layout({ children }) {
   const darkTheme = useThemeContext();
 
   return (
-    <div class={`layout ${darkTheme}`}>
+    <div className={`layout ${darkTheme}`}>
       <Header />
       {children}
       {/* <Footer /> */}

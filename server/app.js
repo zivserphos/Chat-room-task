@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const morganHandler = require("./middlewares/morgan");
 const path = require("path");
 const ApiRouter = require("./routers/ApiRouter");
+const AuthRouter = require("./routers/AuthRouter");
 const { errorHandler } = require("./middlewares/errorHandlers");
 const { unknownEndPoint } = require("./middlewares/unknownEndPoint");
 const { homePage } = require("./controllers/staticFiles");
@@ -19,6 +20,7 @@ app.use(express.static(path.resolve("../client/build/")));
 
 app.get("/login", homePage);
 
+app.use("/auth", AuthRouter);
 app.use("/api", ApiRouter);
 
 app.use(errorHandler);
