@@ -20,12 +20,9 @@ exports.chatStream = async (req, res) => {
   });
   req.on("close", async () => {
     try {
-      console.log(userName);
       await OnlineUsers.findOneAndDelete({ userName });
       emitter.emit("onlineUsers");
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   });
 };
 
