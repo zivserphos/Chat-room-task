@@ -16,16 +16,19 @@ export default function HomePage() {
 
   useEffect(() => {
     setSource(
-      new EventSource(`/?userName=${userName}`, {
-        headers: { "Content-Type": "text/event-stream" },
-      })
+      new EventSource(
+        `http://localhost:3001/api/chatStream/?userName=${userName}`,
+        {
+          headers: { "Content-Type": "text/event-stream" },
+        }
+      )
     );
   }, []);
 
   if (source) {
     source.onopen = async function () {
       console.log("connection to stream has been opened");
-      await axios.post(`/${userName}`);
+      await axios.post(`http://localhost:3001/api/addOnlineUser/${userName}`);
     };
     source.onerror = function (error) {
       console.log("An error has occurred while receiving stream", error);
@@ -50,7 +53,7 @@ export default function HomePage() {
     const timeSent = `${hours}:${minutes}`;
     try {
       await axios.post(
-        "/postComment",
+        "http://localhost:3001/api/postComment",
         { content: inputEl.current.value, userName: userName, timeSent },
         {
           headers: {
