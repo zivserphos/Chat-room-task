@@ -1,19 +1,13 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
+const app = express();
 const cors = require("cors");
-const { EventEmitter } = require("events");
 const morgan = require("morgan");
 const morganHandler = require("./middlewares/morgan");
-const errorHandler = require("./middlewares/errorHandlers");
 const path = require("path");
-const {
-  postComment,
-  chatStream,
-  onlineUser,
-  offlineUser,
-  homePage,
-} = require("./controllers/chatRoom");
-const app = express();
+const ApiRouter = require("./routers/ApiRouter");
+const { errorHandler } = require("./middlewares/errorHandlers");
+const { unknownEndPoint } = require("./middlewares/unknownEndPoint");
+const { homePage } = require("./controllers/staticFiles");
 
 app.use(express.json());
 app.use(cors());
@@ -24,11 +18,10 @@ app.use(
 app.use(express.static(path.resolve("../client/build/")));
 
 app.get("/login", homePage);
-app.get("/chatStream", chatStream);
-app.post("/postComment", postComment);
-app.post("/addOnlineUser/:userName", onlineUser);
-app.post("/offlineUser", offlineUser);
+
+app.use("/api", ApiRouter);
 
 app.use(errorHandler);
+app.use(unknownEndPoint);
 
 module.exports = app;
