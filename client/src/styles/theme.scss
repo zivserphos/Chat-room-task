@@ -8,6 +8,7 @@
   background-color: #fbeec1;
 }
 .toggle {
+  cursor: pointer;
   border: none;
   width: 80px;
   border-radius: 2px;
@@ -31,4 +32,6 @@
 
 .layout {
   height: 120vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
