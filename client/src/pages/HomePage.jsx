@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Message } from "../core/components/Message";
 import { SelfMessage } from "../core/components/SelfMessage";
+import { useNavigate } from "react-router-dom";
 import OnlineUsers from "../core/components/OnlineUsers";
 import axios from "axios";
 
