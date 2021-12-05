@@ -1,0 +1,31 @@
+.footer {
+  margin-top: 10%;
+  width: 100%;
+  position: relative;
+  left: 0;
+  bottom: 0;
+  background-color: #8395a7;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    li {
+      color: antiquewhite;
+      transition: all 0.5s;
+      margin: auto 5px;
+      cursor: pointer;
+      &:hover {
+        color: #54a0ff;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+  }
+}

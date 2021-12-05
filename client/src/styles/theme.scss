@@ -1,0 +1,34 @@
+.dark-mode {
+  transition: 3s ease-out;
+  background-color: #333;
+}
+
+.bright-mode {
+  transition: 3s ease-out;
+  background-color: #fbeec1;
+}
+.toggle {
+  border: none;
+  width: 80px;
+  border-radius: 2px;
+  color: #fcac35;
+  font-weight: 400;
+  background-image: linear-gradient(
+    90deg,
+    rgb(31, 29, 29),
+    rgb(31, 29, 29) 50%,
+    rgba(233, 217, 205, 0.753) 50%
+  );
+  &:hover {
+    background-image: linear-gradient(
+      90deg,
+      rgba(233, 217, 205, 0.753),
+      rgba(233, 217, 205, 0.753) 50%,
+      rgb(31, 29, 29) 50%
+    );
+  }
+}
+
+.layout {
+  height: 120vh;
+}

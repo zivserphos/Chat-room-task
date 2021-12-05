@@ -9,6 +9,7 @@ import {
   alpha,
 } from "@mui/material";
 
+import "../../styles/footer.scss";
 import SearchIcon from "@material-ui/icons/Search";
 import { format } from "date-fns";
 
