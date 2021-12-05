@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { SelfMessage, Message } from "../core/components/Message";
+import { Message } from "../core/components/Message";
+import { SelfMessage } from "../core/components/SelfMessage";
 import OnlineUsers from "../core/components/OnlineUsers";
 import axios from "axios";
 
 export default function HomePage() {
-  console.log("ggg");
   const [comments, setComments] = useState([]);
   const [users, SetUsers] = useState([]);
   const [source, setSource] = useState(null);
@@ -35,7 +35,6 @@ export default function HomePage() {
     source.onmessage = function (event) {
       const users = JSON.parse(event.data).users;
       let newComments = JSON.parse(event.data).newComments;
-      console.log(newComments);
 
       if (users) SetUsers(users);
       if (newComments) {
@@ -82,9 +81,9 @@ export default function HomePage() {
                 ? ""
                 : comments.map((comment) =>
                     comment.userName === userName ? (
-                      <SelfMessage comment={comment} />
+                      <SelfMessage comment={comment} key={comment._id} />
                     ) : (
-                      <Message comment={comment} />
+                      <Message comment={comment} key={comment._id} />
                     )
                   )}
             </div>
