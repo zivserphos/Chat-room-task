@@ -1,3 +1,3 @@
-exports.unknownEndPoint = (req, res, next) => {
+export function unknownEndPoint(req, res, next) {
   res.status(404).json({ error: "Unknown endpoint" });
-};
+}

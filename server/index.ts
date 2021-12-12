@@ -1,5 +1,5 @@
-const app = require("./app");
-const { mongo } = require("./db/mongo");
+import app from "./app";
+import { mongo } from "./db/mongo";
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
