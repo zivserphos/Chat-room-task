@@ -1,12 +1,7 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const {
-  postComment,
-  chatStream,
-  onlineUser,
-  offlineUser,
-} = require("../controllers/chatRoom");
+import { postComment, chatStream, onlineUser } from "../controllers/chatRoom";
 
 router.get("/chatStream", chatStream);
 
@@ -14,4 +9,4 @@ router.post("/postComment", postComment);
 
 router.post("/addOnlineUser/:userName", onlineUser);
 
-module.exports = router;
+export default router;

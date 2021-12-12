@@ -7,4 +7,4 @@ function morganHandler(req, res, next) {
   next();
 }
 
-module.exports = morganHandler;
+export default morganHandler;
