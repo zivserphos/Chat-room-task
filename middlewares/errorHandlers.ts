@@ -1,5 +1,16 @@
-const errorHandler = (err, req, res, _next) => {
-  res.status(err.status || 500).send(err.message);
-};
+import { ErrorRequestHandler } from "express";
+interface HttpError {
+  status: number;
+  message: string;
+}
 
-export default errorHandler;
+export const errorHandler: ErrorRequestHandler = (
+  err: HttpError | Error,
+  _req,
+  res,
+  _next
+) => {
+  "status" in err
+    ? res.status(err.status).send(err.message)
+    : res.status(500).send("internal serverError");
+};

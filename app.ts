@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import morganHandler from "./middlewares/morgan";
+import { morganHandler } from "./middlewares/morgan";
 import path from "path";
 import ApiRouter from "./routers/ApiRouter";
-import errorHandler from "./middlewares/errorHandlers";
+import { errorHandler } from "./middlewares/errorHandlers";
 import { unknownEndPoint } from "./middlewares/unknownEndPoint";
 import { homePage } from "./controllers/staticFiles";
 

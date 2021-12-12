@@ -1,10 +1,11 @@
-const Comments = require("../db/models/comment");
-const Users = require("../db/models/users");
-const OnlineUsers = require("../db/models/onlineUsers");
-const { EventEmitter } = require("events");
+import Comments from "../db/models/comment";
+import Users from "../db/models/users";
+import OnlineUsers from "../db/models/onlineUsers";
+import { EventEmitter } from "events";
+import { Request, Response, NextFunction } from "express";
 const emitter = new EventEmitter();
 
-exports.chatStream = async (req, res) => {
+export const chatStream = async (req: Request, res: Response) => {
   const { userName } = req.query;
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
@@ -26,7 +27,11 @@ exports.chatStream = async (req, res) => {
   });
 };
 
-exports.postComment = async (req, res, next) => {
+export const postComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { content, userName, timeSent } = req.body;
   const user = await Users.findOne({ userName: userName });
   if (!user) Users.insertMany({ userName });
@@ -41,7 +46,7 @@ exports.postComment = async (req, res, next) => {
   res.send("comment has been posted");
 };
 
-exports.onlineUser = async (req, res) => {
+export const onlineUser = async (req: Request, res: Response) => {
   const { userName } = req.params;
   const isLogin = await OnlineUsers.findOne({ userName });
   if (!isLogin) {
