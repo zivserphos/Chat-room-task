@@ -1,14 +1,15 @@
 import React, { useRef } from "react";
+// eslint-disable-next-line import/no-unresolved
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = function () {
   const navigate = useNavigate();
   const inputEl = useRef<HTMLInputElement>(null);
-
-  function toHomePage() {
+  const toHomePage = (): boolean => {
+    console.log("im on home page");
     if (!inputEl.current?.value) return false;
     return true;
-  }
+  };
   return (
     <div id="loginPage">
       <div className="background">
@@ -29,7 +30,7 @@ const LoginPage = function () {
           <input type="text" placeholder="username" id="username" ref={inputEl} />
         </label>
 
-        <button type="button">Log In</button>
+        <button type="submit">Log In</button>
       </form>
     </div>
   );

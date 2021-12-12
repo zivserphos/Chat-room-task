@@ -1,10 +1,7 @@
-const morgan = require("morgan");
+import morgan from "morgan";
+import { Handler, Request } from "express";
 
-function morganHandler(req, res, next) {
-  morgan.token("body", function (req, res) {
-    return JSON.stringify(req.body);
-  });
+export const morganHandler: Handler = (_req, _res, next) => {
+  morgan.token("body", (req: Request) => JSON.stringify(req.body));
   next();
-}
-
-export default morganHandler;
+};

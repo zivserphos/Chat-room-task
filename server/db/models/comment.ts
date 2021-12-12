@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const Comments = new mongoose.Schema({
   userName: {
@@ -14,4 +14,4 @@ const Comments = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Comments", Comments);
+export default mongoose.model("Comments", Comments);

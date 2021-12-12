@@ -1,5 +1,5 @@
 import app from "./app";
-import { mongo } from "./db/mongo";
+import "./db/mongo";
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
