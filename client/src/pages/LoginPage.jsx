@@ -25,7 +25,12 @@ export default function LoginPage() {
       >
         <h3>Login Here</h3>
         <label htmlFor="username">Username</label>
-        <input type="text" placeholder="username" id="username" ref={inputEl} />
+        <input
+          type="text"
+          placeholder="Email or Phone"
+          id="username"
+          ref={inputEl}
+        />
 
         <button>Log In</button>
       </form>
