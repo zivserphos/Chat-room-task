@@ -5,7 +5,7 @@ import { postComment, chatStream, onlineUser } from "../controllers/chatRoom";
 
 router.get("/chatStream", chatStream);
 
-router.post("/postComment", postComment);
+// router.post("/postComment", postComment);
 
 router.post("/addOnlineUser/:userName", onlineUser);
 

@@ -11,19 +11,41 @@ import OnlineUsers from '../core/OnlineUsers';
 
 const HomePage = function () {
 	const [comments, setComments] = useState<Comment[]>([]);
-	const [users, SetUsers] = useState<string[]>([]);
+	const [users, setUsers] = useState<string[]>([]);
 	const location = useLocation();
 	const socketRef = useRef<Socket>();
 	const inputEl = useRef<HTMLInputElement>(null);
 	const userName: string = location.state.user;
 
-	const Base_URL_PATH = 'http://localhost:3001';
+	const Base_URL_PATH = `http://localhost:3001`;
 
 	useEffect(() => {
-		socketRef.current = io(Base_URL_PATH);
+		socketRef.current = io(`${Base_URL_PATH}`, {
+			path: '/api/chatstream',
+			reconnectionDelayMax: 10000,
+			auth: {
+				token: '123',
+			},
+			query: {
+				'my-key': 'my-value',
+				userName,
+			},
+		});
 
-		socketRef.current.on('messageBack', (newComment: Comment) => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
+		socketRef.current.on('onlineUsers', (onlineUsers) => {
+			setUsers(onlineUsers);
+		});
+
+		socketRef.current.on('connectionOpened', ({ allComments }) => {
+			console.log(allComments);
+			setComments(allComments);
+		});
+		socketRef.current.on('response', (newComment: Comment) => {
 			setComments((prevState: Comment[]) => [...prevState, newComment]);
+		});
+		socketRef.current.on('connect_error', () => {
+			socketRef.current?.disconnect();
 		});
 	}, []);
 
@@ -34,15 +56,11 @@ const HomePage = function () {
 		if (minutes.length === 1) minutes = `0${minutes}`;
 		const timeSent = `${hours}:${minutes}`;
 		try {
-			await axios.post(
-				`${Base_URL_PATH}/api/postComment`,
-				{ content: inputEl.current.value, userName, timeSent },
-				{
-					headers: {
-						'content-Type': 'application/json',
-					},
-				}
-			);
+			socketRef.current?.emit('newMessage', {
+				content: inputEl.current.value,
+				userName,
+				timeSent,
+			});
 		} catch (err) {
 			// eslint-disable-next-line no-console
 			console.log(err);
