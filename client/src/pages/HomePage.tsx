@@ -1,88 +1,27 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import React, { useRef, useState, useEffect } from "react";
-// eslint-disable-next-line import/no-unresolved
-import io, { Socket } from "socket.io-client";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
+import React, { useRef } from "react";
+import timeMessageSent from "./utils/utils";
 import Message from "../core/Message";
+import { Comment } from "../types";
 import SelfMessage from "../core/SelfMessage";
 import OnlineUsers from "../core/OnlineUsers";
-import { Comment } from "../types";
+import useSocket from "../customHooks/Socket";
 
 const HomePage = function () {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [users, setUsers] = useState<string[]>([]);
-  const location = useLocation();
   const inputEl = useRef<HTMLInputElement>(null);
-  const userName: string = location.state.user;
-  const socketRef = useRef<Socket>();
-
-  const Base_URL_PATH = "http://localhost:3001";
-
-  useEffect(() => {
-    socketRef.current = io(`${Base_URL_PATH}`, {
-      path: "/api/chatstream",
-      reconnectionDelayMax: 10000,
-      auth: {
-        token: "123",
-      },
-      query: {
-        "my-key": "my-value",
-        userName,
-      },
-    });
-
-    socketRef.current.on("onlineUsers", (onlineUsers) => {
-      setUsers(onlineUsers);
-    });
-
-    socketRef.current.on("connectionOpened", ({ allComments }) => {
-      console.log(allComments);
-      setComments(allComments);
-    });
-    socketRef.current.on("response", (newComment: Comment) => {
-      setComments((prevState: Comment[]) => [...prevState, newComment]);
-    });
-    socketRef.current.on("connect_error", () => {
-      socketRef.current?.disconnect();
-    });
-
-    socketRef.current.on("onlines", ({ a }) => {
-      console.log(a);
-    });
-
-    socketRef.current.on("error", (err) => {
-      console.log(`an error occured: ${err}`);
-    });
-  }, []);
+  const { comments, setComments, users, setUsers, socketRef, userName } =
+    useSocket();
 
   async function postComment() {
-    // socketRef.current?.emit("doSome", email);
     if (!inputEl.current?.value) return;
-    const hours = new Date().getHours().toString();
-    let minutes = new Date().getMinutes().toString();
-    if (minutes.length === 1) minutes = `0${minutes}`;
-    const timeSent = `${hours}:${minutes}`;
-    socketRef.current?.emit("doSome", {
-      content: inputEl.current.value,
+    const newComment = {
+      timeSent: timeMessageSent(),
+      content: inputEl.current?.value,
       userName,
-      timeSent,
-    });
-    try {
-      // await axios.post(
-      //   `${Base_URL_PATH}/api/postComment`,
-      //   { content: inputEl.current.value, userName, timeSent },
-      //   {
-      //     headers: {
-      //       "content-Type": "application/json",
-      //     },
-      //   }
-      // );
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log(err);
-    }
+    };
+    console.log(newComment);
+    socketRef.current?.emit("postComment", newComment);
   }
 
   return (
