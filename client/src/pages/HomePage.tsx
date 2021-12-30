@@ -2,9 +2,9 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useRef, useState, useEffect } from "react";
 // eslint-disable-next-line import/no-unresolved
+import io, { Socket } from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import { EventSourceInitDict } from "eventsource";
 import Message from "../core/Message";
 import SelfMessage from "../core/SelfMessage";
 import OnlineUsers from "../core/OnlineUsers";
@@ -12,65 +12,73 @@ import { Comment } from "../types";
 
 const HomePage = function () {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [users, SetUsers] = useState<string[]>([]);
-  const [source, setSource] = useState<EventSource>();
+  const [users, setUsers] = useState<string[]>([]);
   const location = useLocation();
   const inputEl = useRef<HTMLInputElement>(null);
-  const userName:string = location.state.user;
-  const eventSourceHeaders: EventSourceInitDict = {
-    headers: { "Content-Type": "text/event-stream" },
-  };
+  const userName: string = location.state.user;
+  const socketRef = useRef<Socket>();
 
   const Base_URL_PATH = "http://localhost:3001";
 
   useEffect(() => {
-    setSource(
-      new EventSource(
-        `${Base_URL_PATH}/api/chatStream/?userName=${userName}`,
-        eventSourceHeaders,
-      ),
-    );
+    socketRef.current = io(`${Base_URL_PATH}`, {
+      path: "/api/chatstream",
+      reconnectionDelayMax: 10000,
+      auth: {
+        token: "123",
+      },
+      query: {
+        "my-key": "my-value",
+        userName,
+      },
+    });
+
+    socketRef.current.on("onlineUsers", (onlineUsers) => {
+      setUsers(onlineUsers);
+    });
+
+    socketRef.current.on("connectionOpened", ({ allComments }) => {
+      console.log(allComments);
+      setComments(allComments);
+    });
+    socketRef.current.on("response", (newComment: Comment) => {
+      setComments((prevState: Comment[]) => [...prevState, newComment]);
+    });
+    socketRef.current.on("connect_error", () => {
+      socketRef.current?.disconnect();
+    });
+
+    socketRef.current.on("onlines", ({ a }) => {
+      console.log(a);
+    });
+
+    socketRef.current.on("error", (err) => {
+      console.log(`an error occured: ${err}`);
+    });
   }, []);
 
-  if (source) {
-    source.onopen = async function () {
-      // eslint-disable-next-line no-console
-      console.log("connection to stream has been opened");
-      await axios.post(`${Base_URL_PATH}/api/addOnlineUser/${userName}`);
-    };
-    source.onerror = function (error) {
-      // eslint-disable-next-line no-console
-      console.log("An error has occurred while receiving stream", error);
-    };
-    source.onmessage = function (event) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const { users } = JSON.parse(event.data);
-      let { newComments } = JSON.parse(event.data);
-
-      if (users) SetUsers(users);
-      if (newComments) {
-        newComments = newComments.reverse();
-        setComments(newComments);
-      }
-    };
-  }
-
   async function postComment() {
+    // socketRef.current?.emit("doSome", email);
     if (!inputEl.current?.value) return;
     const hours = new Date().getHours().toString();
     let minutes = new Date().getMinutes().toString();
     if (minutes.length === 1) minutes = `0${minutes}`;
     const timeSent = `${hours}:${minutes}`;
+    socketRef.current?.emit("doSome", {
+      content: inputEl.current.value,
+      userName,
+      timeSent,
+    });
     try {
-      await axios.post(
-        `${Base_URL_PATH}/api/postComment`,
-        { content: inputEl.current.value, userName, timeSent },
-        {
-          headers: {
-            "content-Type": "application/json",
-          },
-        },
-      );
+      // await axios.post(
+      //   `${Base_URL_PATH}/api/postComment`,
+      //   { content: inputEl.current.value, userName, timeSent },
+      //   {
+      //     headers: {
+      //       "content-Type": "application/json",
+      //     },
+      //   }
+      // );
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(err);
@@ -94,11 +102,13 @@ const HomePage = function () {
             <div className="message-area">
               {!comments
                 ? ""
-                : comments.map((comment) => (comment.userName === userName ? (
-                  <SelfMessage comment={comment} key={comment._id} />
-                ) : (
-                  <Message comment={comment} key={comment._id} />
-                )))}
+                : comments.map((comment) =>
+                    comment.userName === userName ? (
+                      <SelfMessage comment={comment} key={comment._id} />
+                    ) : (
+                      <Message comment={comment} key={comment._id} />
+                    )
+                  )}
             </div>
             <div className="enter-area">
               <form>
