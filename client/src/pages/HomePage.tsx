@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import timeMessageSent from "./utils/utils";
 import Message from "../core/Message";
 import { Comment } from "../types";
@@ -9,9 +10,9 @@ import OnlineUsers from "../core/OnlineUsers";
 import useSocket from "../customHooks/Socket";
 
 const HomePage = function () {
+  const [privateMsg, setPrivateMsg] = useState<string>();
   const inputEl = useRef<HTMLInputElement>(null);
-  const { comments, setComments, users, setUsers, socketRef, userName } =
-    useSocket();
+  const { comments, users, socketRef, userName } = useSocket();
 
   async function postComment() {
     if (!inputEl.current?.value) return;
@@ -20,8 +21,12 @@ const HomePage = function () {
       content: inputEl.current?.value,
       userName,
     };
-    console.log(newComment);
-    socketRef.current?.emit("postComment", newComment);
+    !privateMsg
+      ? socketRef.current?.emit("postComment", newComment)
+      : socketRef.current?.emit("privateComment", {
+          newComment,
+          userName: privateMsg,
+        });
   }
 
   return (
@@ -35,7 +40,7 @@ const HomePage = function () {
         </div>
       </div>
       <div className="chat">
-        <OnlineUsers users={users} />
+        <OnlineUsers users={users} setPrivateMsg={setPrivateMsg} />
         <div className="wrapper">
           <div className="main-container">
             <div className="message-area">
@@ -43,9 +48,9 @@ const HomePage = function () {
                 ? ""
                 : comments.map((comment) =>
                     comment.userName === userName ? (
-                      <SelfMessage comment={comment} key={comment._id} />
+                      <SelfMessage comment={comment} key={comment.id} />
                     ) : (
-                      <Message comment={comment} key={comment._id} />
+                      <Message comment={comment} key={comment.id} />
                     )
                   )}
             </div>

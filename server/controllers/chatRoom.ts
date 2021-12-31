@@ -1,37 +1,52 @@
-import Comments from "../db/models/comment";
-import Users from "../db/models/users";
-import OnlineUsers from "../db/models/onlineUsers";
-import { EventEmitter } from "events";
+import { ONLINE_USERS, COMMENTS, USERS } from "../db/dbs";
+import { nanoid } from "nanoid";
 import { io } from "../index";
 import { Socket } from "socket.io";
+import { initialConnect, onlineNamesList } from "./helpers";
 
-export const chatController = async (socket: Socket) => {
-  console.log("connection");
+export const chatController = (socket: Socket) => {
   const { userName } = socket.handshake.query;
-  const allComments = (await Comments.find({})).reverse();
-  const onlineUsers = (await OnlineUsers.find({})).map((user) => user.userName);
+  initialConnect(userName as string, socket);
 
-  socket.emit("connectionOpened", { allComments, onlineUsers });
+  socket.broadcast.emit("onlineUsers", {
+    onlineUsers: onlineNamesList(),
+  });
+
+  socket.emit("connectionOpened", {
+    allComments: COMMENTS,
+    onlineUsers: onlineNamesList(),
+  });
 
   socket.on("connect_error", () => {
     console.log("disconnect");
   });
 
-  socket.on("postComment", async (newComment) => {
-    console.log(newComment);
+  socket.on("postComment", (newComment: Comment) => {
     try {
-      const res = await Comments.insertMany(newComment);
-      io.emit("commentPosted", res[0]);
+      newComment.id = nanoid();
+      COMMENTS.push({ ...newComment });
+      io.emit("commentPosted", newComment);
     } catch (err) {
       io.emit("error", { err: "could not post comment" });
     }
   });
-  socket.on("onlineUsers", async (userName) => {
-    const isOnline = await OnlineUsers.findOne({ userName });
-    if (!isOnline) {
-      const a = await OnlineUsers.insertMany({ userName });
-      io.emit("onlineUsers", userName);
-      console.log(a);
-    }
+
+  socket.on("privateComment", ({ newComment, userName }) => {
+    newComment.id = nanoid();
+    const userSocket = ONLINE_USERS.find(
+      (user) => user.userName === userName
+    )?.socketId;
+    if (!userSocket) return;
+    newComment.privateMsg = true;
+    newComment.target = userName;
+    socket.emit("commentPosted", newComment);
+    socket.broadcast.to(userSocket).emit("commentPosted", newComment);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("disconnect");
+    const index = ONLINE_USERS.findIndex((user) => user.userName === userName);
+    ONLINE_USERS.splice(index, 1);
+    io.emit("onlineUsers", { onlineUsers: onlineNamesList() });
   });
 };

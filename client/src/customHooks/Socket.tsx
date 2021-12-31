@@ -27,21 +27,30 @@ const useSocket = () => {
     });
 
     socketRef.current.on("connectionOpened", ({ allComments, onlineUsers }) => {
-      console.log(allComments);
+      console.log(allComments, onlineUsers);
       setComments(allComments);
       setUsers(onlineUsers);
     });
 
-    socketRef.current.on("onlineUsers", (onlineUsers) => {
-      console.log("im herezaza");
+    socketRef.current.on("onlineUsers", ({ onlineUsers }) => {
+      console.log(onlineUsers);
       setUsers(onlineUsers);
     });
 
+    // socketRef.current.on("privateMessage" , () => {
+
+    // });
+
     socketRef.current.on("commentPosted", (newComment: Comment) => {
+      console.log(newComment);
       setComments((prevState: Comment[]) => [newComment, ...prevState]);
     });
     socketRef.current.on("connect_error", () => {
       socketRef.current?.disconnect();
+    });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("disconnect");
     });
 
     socketRef.current.on("error", ({ err }) => {
@@ -49,7 +58,7 @@ const useSocket = () => {
     });
   }, []);
 
-  return { comments, setComments, users, setUsers, socketRef, userName };
+  return { comments, users, socketRef, userName };
 };
 
 export default useSocket;

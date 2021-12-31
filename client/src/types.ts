@@ -2,5 +2,7 @@ export interface Comment {
   userName: string;
   content: string;
   timeSent: string;
-  _id: string;
+  id: string;
+  privateMsg?: boolean;
+  target?: string;
 }
