@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
 
 const OnlineUsers = function ({
   users,
@@ -23,13 +23,13 @@ const OnlineUsers = function ({
         {users.map((user) => (
           <div
             role="button"
-            className="onlineUser"
+            className="aside__user online-circle"
             key={user}
             onClick={() => setPrivateMsg(user)}
           >
             <span>{user}</span>
             <span>
-              <FontAwesomeIcon icon={faLock} style={{ color: "red" }} />
+              <FontAwesomeIcon icon={faComments} style={{ color: "green" }} />
             </span>
           </div>
         ))}
