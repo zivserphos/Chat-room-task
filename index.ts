@@ -1,5 +1,4 @@
 import app from "./app";
-import "./db/mongo";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { chatController } from "./controllers/chatRoom";

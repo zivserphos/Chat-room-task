@@ -1,4 +1,11 @@
 {
+  "ts-node": {
+    "files": true
+  },
+  "files": [
+    "./index.ts",
+    "./types.d.ts"
+  ],
   "compilerOptions": {
     "target": "ES6",
     "outDir": "./build/",
