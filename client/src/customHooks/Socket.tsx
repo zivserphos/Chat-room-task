@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import io, { Socket } from "socket.io-client";
 import { Comment } from "../types";
@@ -27,30 +27,19 @@ const useSocket = () => {
     });
 
     socketRef.current.on("connectionOpened", ({ allComments, onlineUsers }) => {
-      console.log(allComments, onlineUsers);
       setComments(allComments);
       setUsers(onlineUsers);
     });
 
     socketRef.current.on("onlineUsers", ({ onlineUsers }) => {
-      console.log(onlineUsers);
       setUsers(onlineUsers);
     });
 
-    // socketRef.current.on("privateMessage" , () => {
-
-    // });
-
     socketRef.current.on("commentPosted", (newComment: Comment) => {
-      console.log(newComment);
       setComments((prevState: Comment[]) => [newComment, ...prevState]);
     });
     socketRef.current.on("connect_error", () => {
       socketRef.current?.disconnect();
-    });
-
-    socketRef.current.on("disconnect", () => {
-      console.log("disconnect");
     });
 
     socketRef.current.on("error", ({ err }) => {

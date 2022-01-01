@@ -4,7 +4,6 @@
 import React, { useRef, useState } from "react";
 import timeMessageSent from "./utils/utils";
 import Message from "../core/Message";
-import { Comment } from "../types";
 import SelfMessage from "../core/SelfMessage";
 import OnlineUsers from "../core/OnlineUsers";
 import useSocket from "../customHooks/Socket";
@@ -27,6 +26,7 @@ const HomePage = function () {
           newComment,
           userName: privateMsg,
         });
+    inputEl.current.value = "";
   }
 
   return (
