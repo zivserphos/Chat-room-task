@@ -16,7 +16,7 @@ app.use(
   morganHandler,
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
-app.use(express.static(path.resolve("../client/build/")));
+app.use(express.static(path.resolve("./client/build/")));
 
 app.get("/login", homePage);
 
