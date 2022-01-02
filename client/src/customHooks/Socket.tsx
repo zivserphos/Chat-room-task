@@ -11,7 +11,7 @@ const useSocket = () => {
   const userName: string = location.state.user;
   const socketRef = useRef<Socket>();
 
-  const Base_URL_PATH = "http://localhost:3001";
+  const Base_URL_PATH = "/";
 
   useEffect(() => {
     socketRef.current = io(`${Base_URL_PATH}`, {
