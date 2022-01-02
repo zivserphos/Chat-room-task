@@ -23,7 +23,7 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :body"
   )
 );
-app.use(express_1.default.static(path_1.default.resolve("./client")));
+app.use(express_1.default.static(path_1.default.resolve("./ZZZZZ")));
 app.get("/login", staticFiles_1.homePage);
 app.use("/api", ApiRouter_1.default);
 app.use(errorHandlers_1.errorHandler);
