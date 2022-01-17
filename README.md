@@ -1,2 +1,2 @@
 # Chat Room App
-![image](https://user-images.githubusercontent.com/89525096/149818522-bfa36419-f0c7-459a-a794-f85de5de0350.png)
+![image](https://user-images.githubusercontent.com/89525096/149818595-538cf625-07f3-4b92-991c-9f9f4a057dcd.png)
